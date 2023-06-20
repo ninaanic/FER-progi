@@ -1,0 +1,145 @@
+\chapter{Implementacija i korisničko sučelje}
+		
+		
+		\section{Korištene tehnologije i alati}
+		
+			Da bi postigli bolju komunikaciju te se bolje organizirali oko podjele zadataka koristili smo aplikacije Discord\footnote{\url{https://discord.com/}} i WhatsApp\footnote{\url{https://www.whatsapp.com/}}. Za izradu dokumentacije smo koristili TeXstudio\footnote{\url{https://www.texstudio.org/}} - integrirano okruženje za pisanje LaTex dokumenata, a za UML dijagrame smo koristili Astah Proffesional\footnote{\url{http://astah.net/editions/professional}}. Udaljeni repozitorij projekta dostupan je na web platformi Gitlab\footnote{\url{https://gitlab.com/}}.
+			
+			Kao razvojno okruženje koristili smo Visual Studio Code\footnote{\url{https://code.visualstudio.com/}} - uređivač izvornog koda koji je napravio Microsoft. VS Code ima ugrađeni sustav za upravljanje izvornim kodom Git\footnote{\url{https://git-scm.com/}} koji smo koristili u ovom projektu.
+			
+			Aplikacija je napravljena uz pomoć radnog okvira Flutter\footnote{\url{https://flutter.dev/multi-platform/mobile}} i programsog jezika Dart\footnote{\url{https://dart.dev/}}. Flutter je održavan od strane Google-a, a koristi se za razvoj aplikacija za različite sustave - najčešće za razvoj mobilnih aplikacija za android i IOS. Baza podataka se nalazi na poslužitelju Firebase\footnote{\url{https://firebase.google.com/}} koji je također nastao od strane Google-a. Firebase je software koji nudi razne usluge za lakšu i bržu izradu Android, IOS i web aplikacija.
+			
+			\eject 
+		
+	
+		\section{Ispitivanje programskog rješenja}
+	
+			
+			\subsection{Ispitivanje komponenti}
+			
+			Budući da je aplikacija napisana za Android uređaje koristeći Flutter, za testove je korišten implementirani paket \textit{flutter\textunderscore test: sdk: flutter} pomoću kojeg su napravljeni unit testovi aplikacije.
+			
+			Testiraju se razne funkcionalnosti dostupne na android uređaju, među kojima vrijedi izdvojiti testiranje stvaranja novog skladištara, stvaranje novog proizvoda, Unos novog zapisa skeniranja artikla, stvaranje nove grupe proizvoda, stvaranje nove inventure i obavijesti da proizvod ne postoji.
+			
+			Primjer testiranja:
+			
+			\begin{figure}[H]
+				\centering
+				\includegraphics[width=0.8\linewidth]{"slike/Test1"}
+				\caption{Screenshot unit test koda (1)}
+				\label{Slika 5.1}
+			\end{figure}
+			
+			\begin{figure}[H]
+				\centering
+				\includegraphics[width=0.8\linewidth]{"slike/Test2"}
+				\caption{Screenshot unit test koda (2)}
+				\label{Slika 5.2}
+			\end{figure}
+			
+			\begin{figure}[H]
+				\centering
+				\includegraphics[width=0.8\linewidth]{"slike/Test3"}
+				\caption{Rezultati unit testiranja}
+				\label{Slika 5.3}
+			\end{figure}
+			
+			
+			
+			\subsection{Ispitivanje sustava}
+			
+			 Ispitivanje sustava je provedeno koristeći funkcionalnosti iz flutterovog paketa integration\textunderscore test kojeg je potrebno instalirati tako da se u pubspec.yaml file pod dev\textunderscore dependencies dodaju sljedeće linije\\
+			
+			 \begin{verbatim}
+			 	integration_test:
+			 		sdk: flutter
+			 \end{verbatim}
+		 	i u terminal unese naredba flutter pub get. Sav kod za ispitivanje sustava napisan je u programskom jeziku dart. Nad sustavom proveli smo sljedeća testiranja:
+		 	
+		 	Otvaranje pop up prozora nakon pritiska gumba za skeniranje:
+		 	\begin{verbatim}
+		 		testWidgets('Skeniraj i otvori pop up', (WidgetTester tester) async {
+		 			app.main();
+		 			await tester.pumpAndSettle();
+		 			final Finder scan = find.byTooltip('scan');
+		 			await tester.tap(scan);
+		 			expect(find.byType(AlertDialog), findsOneWidget);
+		 		});
+		 	\end{verbatim}
+	 		
+	 		Otvaranje pop up prozora prilikom dodavanja novoga skladišta:
+	 		\begin{verbatim}
+	 			testWidgets('Otvaranje dialoga prilikom dodavanja skladišta', (WidgetTester tester) async {
+	 				app.main();
+	 				await tester.pumpAndSettle();
+	 				final Finder addWarehouse = find.byTooltip('addWarehouse');
+	 				await tester.tap(addWarehouse);
+	 				expect(find.byType(AlertDialog), findsOneWidget);
+	 			});
+	 		\end{verbatim}
+ 			
+ 			Upisivanje podataka za prijavu:
+ 			\begin{verbatim}
+ 				testWidgets('Upisivanje podataka za prijavu', (WidgetTester tester) async {
+ 					app.main();
+ 					await tester.pumpAndSettle();
+ 					final Finder inputEmail = find.byKey(Key('email'));
+ 					final Finder inputPass = find.byKey(Key('inputPass'));
+ 					await tester.enterText(inputEmail, 'fb@gmail.com');
+ 					await tester.enterText(inputPass, '123456');
+ 					expect(find.text('fb@gmail.com'), findsOneWidget);
+ 					expect(find.text('123456'), findsOneWidget);
+ 				});
+ 			\end{verbatim}
+ 		
+ 			Upisivanje podataka za registraciju:
+ 			\begin{verbatim}
+ 				testWidgets('Upisivanje podataka za registraciju', (WidgetTester tester) async {
+ 					app.main();
+ 					await tester.pumpAndSettle();
+ 					final Finder inputName = find.byKey(Key('name'));
+ 					final Finder inputLastName = find.byKey(Key('lastName'));
+ 					final Finder inputEmail = find.byKey(Key('email'));
+ 					final Finder inputPass = find.byKey(Key('inputPass'));
+ 					await tester.enterText(inputName, 'Filip');
+ 					await tester.enterText(inputLastName, 'Begović');
+ 					await tester.enterText(inputEmail, 'fb@gmail.com');
+ 					await tester.enterText(inputPass, '123456');
+ 					expect(find.text('Filip'), findsOneWidget);
+ 					expect(find.text('Begović'), findsOneWidget);
+ 					expect(find.text('fb@gmail.com'), findsOneWidget);
+ 					expect(find.text('123456'), findsOneWidget);
+ 				});
+ 			\end{verbatim}
+		
+		\section{Dijagram razmještaja}
+			
+			Dijagram razmještaja opisuje topologiju sustava i usredotočen je na odnos sklopovskih i programskih dijelova. Na \textit{Firebase} platformi nalaze se tri glavna artefakta kojima upravljamo bazom podataka. Klijent preko aplikacije pristupa bazi podataka. Sustav je baziran na obliku "poslužiteljske arhitekture". Komunikacija između mobilnog uređaja  (skladištar, voditelj skladišta i direktora) i \textit{Firebase} odvija se preko SDK veze.
+			
+			\begin{figure}[H]
+				\centering
+				\includegraphics[width=0.8\linewidth]{"slike/Deployment Diagram"}
+				\caption{Specifikacijski dijagram razmještaja}
+				\label{Slika 5.4}
+			\end{figure}
+			
+			\eject 
+		
+		\section{Upute za puštanje u pogon}
+		
+			Upute za puštanje u pogon napisane su za windows operacijski sustav. Za pokretanje aplikacije na vlastitom mobitelu potrebno je prvo napraviti \textit{google profil}, te preuzeti aplikaciju s google diska (\textbf{Ovdje dolazi link aplikacije}). Kada se cijela aplikacija preuzela u željenu mapu na računalu potrebno je instalirati Flutter.
+			
+			Prvo unesite link u vaš preglednik: \url{https://git-scm.com/download/win} te odaberite verziju koja odgovara vašem računalu (32-bit ili 64-bit). Nakon preuzimanja, pokrenite preuzeti \textit{.exe file} te pratite upute do kraja instalacije.
+			
+			Nakon toga unesite \url{https://docs.flutter.dev/get-started/install/windows} u vaš preglednik te provjerite je li vaše računalo zadovoljava potrebne specifikacije. Ispod podnaslova \textit{Get the Flutter SDK} pritisnite plavi gumb: \textit{flutter\textunderscore windows\textunderscore 2.8.1-stable.zip}. Nakon preuzimanja .zip mape te izvucite datoteke u mapu C:/src/.
+			
+			Potom je potrebno dodati PATH kako bi smo lakše koristili flutter kasnije. Pratite mape gdje ste instalirali flutter sve dok ne dođete do bit mape (najvjerojarnije putanja: C:/src/FlutterSDK/flutter/bin) te kopirajte tu putanju pošto će nam trebati poslije. U Windows tražilicu potrebno je upisati \textit{Control panel} te odabrati \textit{System}. S lijeve strane nalaziti će se popis opcija gdje je potrebno odabrati \textit{Additional settings}. Odaberite \textit{Edit enviroment variables for your account} te će vam se otvoriti prozor podijeljen na dva dijela. U gornjem prozoru nađite varijablu imenom \textit{Path}, pritisnite na nju te ispod pritisnite \textit{Edit}. S desne strane pritisnite \textit{New} te zalijepite kopiranu putanju do mape bin. Potom u odjeljku ispod nađite ponovno varijablu \textit{Path} te ponovite isti postupak kao i prethodno naveden. Pritisnite OK te izađite van.
+			
+			Provjerom uspješnosti instalacije \textit{fluttera} istovremeno ćete saznati je li određene potrebne datoteke nedostaju. U CMD-u napišite naredbu \textit{flutter doctor}. Povratna informacija će izbaciti kako nedostaje Android SDK, koji nam je sada nepotreban.
+			
+			Otvorite VS Code te u opciji \textit{Open Folder} otvorite mapu u kojoj se nalazi aplikacija. Odaberite opciju \textit{Extensions} te preuzmite i u VS Code \textit{Flutter} i \textit{Dart}.
+			
+			Nakon što je sve potrebno instalirano i aplikacija otvorena u VS Code, u \textit{Terminal} se može upisati naredba: flutter build apk --build-name=1.0.1 --build-number=2 koja pokreće \textit{build} aplikacije. Nakon što se proces završi u početnoj mapi projekta u \textit{File Explorer} pratite putanju: \textit{build/app/outputs/apk} te će datoteka pod nazivom apk-release.apk biti završna i primjenjiva aplikacija projekta. Za kraj je potrebno prebaciti apk datoteku na mobilni uređaj te pokrenuti instalaciju.
+			
+			
+			\eject 
