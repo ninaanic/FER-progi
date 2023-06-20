@@ -1,0 +1,20 @@
+//Poziv funkcije za signIn
+await context.read<AuthService>().signIn("karlo@mail.com", "abc123");
+
+//Poziv funkcije za signUp
+await context.read<AuthService>().signUp("karlo@mail.com", "abc123", "karlo", "franic", "worker");
+
+//Promjena ekrana
+await Navigator.push(
+    context,
+    MaterialPageRoute(
+    builder: (context) => SignUpWidget(),
+    ));
+
+Sve funkcije su asinkrone pa bi bilo dobro prije nego se pokrenu pozvat neki setState i postavit neku varijablu
+loading u true i onda ako je ta varijabla true onda se prikazuje CircularProgressIndicator() inace se prikazuje
+ovo sta vec treba bit na ekranu. To vam isto Begi moze pokazat. Naravno onda nakon sto se izvrsi funkcija treba 
+loading ponovno postavit u false(i nadam se da je ocito da na pocetku treba bit false)
+
+Naravno u funkcije cete pisat varbijale koje sadrzavaju unesene vrijednosti, ovo je sam za testiranje. I pazite
+da uvijek treba promjenit mail kod SignUp-a jer inace nece radit.

@@ -1,0 +1,1 @@
+enum ChooseStat { ARTICLS, WORKER }
